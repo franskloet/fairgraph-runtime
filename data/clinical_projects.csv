@@ -1,3 +1,5 @@
-Label,Identifier,Title,Description
-Project Alpha,PRJ_001,Diabetes Research Programme,Multi-year investigation into type-2 diabetes biomarkers and interventions
-Project Beta,PRJ_002,Cardiovascular Risk Study,Population-level study of cardiovascular risk factors in urban cohorts
+Label,Identifier,Title,Description,Share With
+Project Alpha,PRJ_001,Diabetes Research Programme,Group-shared: visible to team_alpha users,team_alpha
+Project Beta,PRJ_002,Cardiovascular Risk Study,Public-shared: visible to guests and everyone else,public
+Project Gamma,PRJ_003,Genomic Discovery Initiative,Extern-shared: visible to external connections and local users,extern
+Project Delta,PRJ_004,Private Admin Initiative,Private-shared: visible only to admin owner,

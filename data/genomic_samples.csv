@@ -1,0 +1,6 @@
+Label,Identifier,Title,Description,Sample Type,Study
+Sample S001,SAM_001,Blood PAT_001 WGS,Venous whole blood from patient P001 for WGS,Blood,GSTD_001
+Sample S002,SAM_002,Blood PAT_002 WGS,Venous whole blood from patient P002 for WGS,Blood,GSTD_001
+Sample S003,SAM_003,Adipose PAT_003 T2D,Adipose tissue biopsy from patient P003 for T2D variant study,Tissue,GSTD_002
+Sample S004,SAM_004,Blood PAT_004 WGS,Venous whole blood from patient P004 for WGS,Blood,GSTD_001
+Sample S005,SAM_005,Blood PAT_005 T2D,Venous whole blood from patient P005 for T2D variant study,Blood,GSTD_002

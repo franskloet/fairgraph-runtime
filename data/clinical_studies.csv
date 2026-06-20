@@ -1,0 +1,4 @@
+Label,Identifier,Title,Description,Study Design,Project
+Study Alpha-1,STD_001,Phase 1 Diabetes Vaccine Trial,Safety and efficacy evaluation of experimental insulin sensitiser,Randomised controlled trial,PRJ_001
+Study Alpha-2,STD_002,Diabetes Biomarker Validation,Cross-sectional validation of novel glycaemic biomarkers,Observational cross-sectional,PRJ_001
+Study Beta-1,STD_003,Cardiovascular Risk in Adults 40-60,Longitudinal cohort tracking CVD events in middle-aged adults,Prospective cohort,PRJ_002

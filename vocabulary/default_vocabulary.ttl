@@ -1,0 +1,26 @@
+@prefix fs:      <https://fairtree.nl/ontology#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+
+### Generic Entity definition for dynamic databases
+fs:GenericEntity a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A generic data entity." ;
+    sh:name "Entity" ;
+    fs:namePlural "Entities" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+
+### System-internal sharing constraint
+
+fs:SharingShape a sh:NodeShape ;
+    sh:targetSubjectsOf fs:sharedWith ;
+    sh:property [ sh:path fs:sharedWith ; sh:datatype xsd:string ; sh:description "Ensures 'Share With' values are valid system usernames." ] .

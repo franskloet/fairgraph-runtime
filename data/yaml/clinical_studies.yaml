@@ -1,0 +1,9 @@
+tableName: clinical_studies
+targetClass: schema:MedicalStudy
+columns:
+  Label: rdfs:label
+  Identifier: dcterms:identifier
+  Title: dcterms:title
+  Description: rdfs:comment
+  Study Design: schema:studyDesign
+  Project: dcterms:isPartOf

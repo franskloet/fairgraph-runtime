@@ -1,0 +1,34 @@
+{
+  "admin": {
+    "password": "admin-password",
+    "role": "admin",
+    "groups": [
+      "team_alpha"
+    ],
+    "database": "all"
+  },
+  "user1": {
+    "password": "user-password",
+    "role": "user",
+    "groups": [
+      "team_alpha"
+    ],
+    "database": "plant,clinical"
+  },
+  "user2": {
+    "password": "user-password",
+    "role": "user",
+    "groups": [
+      "team_beta"
+    ],
+    "database": "clinical"
+  },
+  "external_user": {
+    "password": "external-password",
+    "role": "external",
+    "groups": [
+      "remote_instances"
+    ],
+    "database": "genomic"
+  }
+}

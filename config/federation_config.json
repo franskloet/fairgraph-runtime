@@ -1,0 +1,21 @@
+{
+  "connections": [
+    {
+      "name": "remote-db",
+      "url": "http://remote_api:8000",
+      "apiKey": "",
+      "status": "active"
+    }
+  ],
+  "plugins": [
+    {
+      "name": "Nanopublications",
+      "status": "active"
+    },
+    {
+      "name": "YODA",
+      "status": "inactive"
+    }
+  ],
+  "databases": []
+}

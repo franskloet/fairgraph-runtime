@@ -1,0 +1,83 @@
+@prefix fs:      <https://fairtree.nl/ontology#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dash:    <http://datashapes.org/dash#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+@prefix schema:  <http://schema.org/> .
+@prefix obo:     <http://purl.obolibrary.org/obo/> .
+
+### Level 1 — Research Project (schema:ResearchProject) — shared with clinical
+
+schema:ResearchProject a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A genomic research programme or grant-funded programme." ;
+    sh:name "Project" ;
+    fs:namePlural "Projects" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( schema:MedicalStudy ) ;
+    fs:hierarchyRoot true ;
+    fs:adminEditOnly true ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### Level 2 — Genomic Study (schema:MedicalStudy)
+
+schema:MedicalStudy a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A genomic study focusing on samples and sequencing." ;
+    sh:name "Genomic Study" ;
+    fs:namePlural "Genomic Studies" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( obo:OBI_0000747 ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] ,
+    [ sh:name "Project" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path dcterms:isPartOf ; sh:order 4 ] .
+
+### Level 3 — Biological Sample (OBI:0000747 — material sample)
+
+obo:OBI_0000747 a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A biological specimen used in genomic analysis (OBI material sample)." ;
+    sh:name "Biological Sample" ;
+    fs:namePlural "Biological Samples" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( obo:OBI_0001619 ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Sample Type" ; sh:description "Type of specimen (e.g. blood, tissue, saliva)." ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path schema:additionalType ; sh:order 4 ] ,
+    [ sh:name "Study" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path dcterms:isPartOf ; sh:order 5 ] .
+
+### Level 4 — Genomic Sequence (OBI:0001619 — nucleic acid sequencing)
+
+obo:OBI_0001619 a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A nucleic acid sequence derived from a biological sample (OBI:0001619)." ;
+    sh:name "Genomic Sequence" ;
+    fs:namePlural "Genomic Sequences" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### System-internal sharing constraint
+
+fs:SharingShape a sh:NodeShape ;
+    sh:targetSubjectsOf fs:sharedWith ;
+    sh:property [ sh:path fs:sharedWith ; sh:datatype xsd:string ; sh:description "Ensures 'Share With' values are valid system usernames." ] .

@@ -1,0 +1,118 @@
+@prefix fs:      <https://fairtree.nl/ontology#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dash:    <http://datashapes.org/dash#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+@prefix schema:  <http://schema.org/> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix custom:  <https://sils.uva.nl/ontology/custom#> .
+
+### Level 1 — Research Project (schema:ResearchProject)
+
+schema:ResearchProject a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A clinical research programme or grant-funded programme." ;
+    sh:name "Project" ;
+    fs:namePlural "Projects" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( schema:MedicalStudy ) ;
+    fs:hierarchyRoot true ;
+    fs:adminEditOnly true ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:description "Project identifier." ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Outcome" ; sh:nodeKind sh:IRI ; sh:path custom:Outcome ; sh:order 4 ] .
+
+### Level 2 — Medical Study (schema:MedicalStudy)
+
+schema:MedicalStudy a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A series of observations or interventions to answer a clinical question." ;
+    sh:name "Study" ;
+    fs:namePlural "Studies" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( dcat:Dataset ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Project" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path custom:Project ; sh:order 4 ],
+    [ sh:name "Outcome" ; sh:nodeKind sh:IRI ; sh:path custom:Outcome ; sh:order 5 ] .
+
+### Level 3 — Outcomes (custom:Outcome)
+
+custom:Outcome a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "An outcome measurement metric." ;
+    sh:name "Outcome" ;
+    fs:namePlural "Outcomes" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### Level 4 — Methods (custom:Method)
+
+custom:Method a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A questionnaire method." ;
+    sh:name "Method" ;
+    fs:namePlural "Methods" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Outcome" ; sh:nodeKind sh:IRI ; sh:path custom:Outcome ; sh:order 4 ] .
+
+### Level 5 — Instrumentations (custom:Instrumentation)
+
+custom:Instrumentation a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "An instrumentation tool." ;
+    sh:name "Instrumentation" ;
+    fs:namePlural "Instrumentations" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Method" ; sh:nodeKind sh:IRI ; sh:path custom:Method ; sh:order 4 ],
+    [ sh:name "Instrument type" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Instrument_type ; sh:order 5 ] .
+
+### Level 6 — Dataset (dcat:Dataset)
+
+dcat:Dataset a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A questionnaire dataset." ;
+    sh:name "Dataset" ;
+    fs:namePlural "Datasets" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Dataset type" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Dataset_type ; sh:order 4 ],
+    [ sh:name "Format" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Format ; sh:order 5 ],
+    [ sh:name "Access rights" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Access_rights ; sh:order 6 ],
+    [ sh:name "Active" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Active ; sh:order 7 ],
+    [ sh:name "Study" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path custom:Study ; sh:order 8 ] .
+
+### Sharing constraint
+fs:SharingShape a sh:NodeShape ;
+    sh:targetSubjectsOf fs:sharedWith ;
+    sh:property [ sh:path fs:sharedWith ; sh:datatype xsd:string ; sh:description "Ensures 'Share With' values are valid system usernames." ] .

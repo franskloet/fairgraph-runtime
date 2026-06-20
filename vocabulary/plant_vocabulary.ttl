@@ -1,0 +1,89 @@
+@prefix fs:      <https://fairtree.nl/ontology#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+@prefix miappe:  <https://fairtree.nl> .
+@prefix obo:     <http://obolibrary.org> .
+
+### Base Generic Entity Definition
+fs:GenericEntity a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A generic data entity." ;
+    sh:name "Entity" ;
+    fs:namePlural "Entities" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### 1. Investigation
+miappe:Investigation a rdfs:Class, sh:NodeShape ;
+    rdfs:subClassOf fs:GenericEntity ;
+    sh:closed false ;
+    sh:description "An investigation block for MIAPPE metadata." ;
+    sh:name "Investigation" ;
+    fs:namePlural "Investigations" ;
+    sh:property
+    [ sh:name "Submission Date" ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:path dcterms:dateSubmitted ; sh:order 4 ],
+    [ sh:name "Public Release Date" ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:path dcterms:available ; sh:order 5 ],
+    [ sh:name "License" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:license ; sh:order 6 ] .
+
+### 2. Study
+miappe:Study a rdfs:Class, sh:NodeShape ;
+    rdfs:subClassOf fs:GenericEntity ;
+    sh:closed false ;
+    sh:description "An experimental study layout under MIAPPE." ;
+    sh:name "Study" ;
+    fs:namePlural "Studies" ;
+    sh:property
+    [ sh:name "Start Date" ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:path dcterms:created ; sh:order 4 ],
+    [ sh:name "End Date" ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:path dcterms:date ; sh:order 5 ],
+    [ sh:name "Geographic Location" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:spatial ; sh:order 6 ],
+    [ sh:name "Experimental Design" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path miappe:experimentalDesign ; sh:order 7 ],
+    [ sh:name "Growth Facility" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path miappe:growthFacility ; sh:order 8 ] .
+
+### 3. Biological Material
+miappe:BiologicalMaterial a rdfs:Class, sh:NodeShape ;
+    rdfs:subClassOf fs:GenericEntity ;
+    sh:closed false ;
+    sh:description "Plant material details used in the experiment." ;
+    sh:name "Biological Material" ;
+    fs:namePlural "Biological Materials" ;
+    sh:property
+    [ sh:name "Organism Genus" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path obo:NCBITaxon_genus ; sh:order 4 ],
+    [ sh:name "Organism Species" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path obo:NCBITaxon_species ; sh:order 5 ],
+    [ sh:name "Material Source ID" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:source ; sh:order 6 ] .
+
+### 4. Observation Unit
+miappe:ObservationUnit a rdfs:Class, sh:NodeShape ;
+    rdfs:subClassOf fs:GenericEntity ;
+    sh:closed false ;
+    sh:description "The basic block for a set of phenotype observations." ;
+    sh:name "Observation Unit" ;
+    fs:namePlural "Observation Units" ;
+    sh:property
+    [ sh:name "Type" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:type ; sh:order 4 ],
+    [ sh:name "Spatial Distribution" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path miappe:spatialDistribution ; sh:order 5 ] .
+
+### 5. Observation Variable
+miappe:ObservationVariable a rdfs:Class, sh:NodeShape ;
+    rdfs:subClassOf fs:GenericEntity ;
+    sh:closed false ;
+    sh:description "The definition of what phenotypic data was collected." ;
+    sh:name "Observation Variable" ;
+    fs:namePlural "Observation Variables" ;
+    sh:property
+    [ sh:name "Name" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:label ; sh:order 4 ],
+    [ sh:name "Trait" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path obo:TO_trait ; sh:order 5 ],
+    [ sh:name "Method" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path miappe:measurementMethod ; sh:order 6 ],
+    [ sh:name "Scale" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path obo:UO_scale ; sh:order 7 ] .
+
+### System-internal sharing constraint
+
+fs:SharingShape a sh:NodeShape ;
+    sh:targetSubjectsOf fs:sharedWith ;
+    sh:property [ sh:path fs:sharedWith ; sh:datatype xsd:string ; sh:description "Ensures 'Share With' values are valid system usernames." ] .

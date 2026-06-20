@@ -1,0 +1,9 @@
+tableName: genomic_samples
+targetClass: obo:OBI_0000747
+columns:
+  Label: rdfs:label
+  Identifier: dcterms:identifier
+  Title: dcterms:title
+  Description: rdfs:comment
+  Sample Type: schema:additionalType
+  Study: dcterms:isPartOf

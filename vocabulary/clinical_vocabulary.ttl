@@ -1,0 +1,84 @@
+@prefix fs:      <https://fairtree.nl/ontology#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dash:    <http://datashapes.org/dash#> .
+@prefix dcterms: <http://purl.org/dc/elements/1.1/> .
+@prefix schema:  <http://schema.org/> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+
+### Level 1 — Research Project (schema:ResearchProject)
+
+schema:ResearchProject a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A clinical research programme or grant-funded programme." ;
+    sh:name "Project" ;
+    fs:namePlural "Projects" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( schema:MedicalStudy ) ;
+    fs:hierarchyRoot true ;
+    fs:adminEditOnly true ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:description "Project identifier." ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### Level 2 — Medical Study (schema:MedicalStudy)
+
+schema:MedicalStudy a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A series of observations or interventions to answer a clinical question." ;
+    sh:name "Study" ;
+    fs:namePlural "Studies" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( schema:Patient ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
+    [ sh:name "Study Design" ; sh:description "Primary study design or goal." ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path schema:studyDesign ; sh:order 4 ] ,
+    [ sh:name "Project" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path dcterms:isPartOf ; sh:order 5 ] .
+
+### Level 3 — Patient / Clinical Subject (schema:Patient)
+
+schema:Patient a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A patient or clinical subject enrolled in a study." ;
+    sh:name "Patient" ;
+    fs:namePlural "Patients" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    fs:hierarchyDescendants ( dcat:Dataset ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] ,
+    [ sh:name "Study" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path dcterms:isPartOf ; sh:order 4 ] .
+
+### Level 4 — Dataset (dcat:Dataset)
+
+dcat:Dataset a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:description "A collection of measurements or observations for a patient." ;
+    sh:name "Dataset" ;
+    fs:namePlural "Datasets" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    fs:partOfHierarchy true ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; dash:singleLine true ; fs:importantProperty true ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
+### System-internal sharing constraint
+
+fs:SharingShape a sh:NodeShape ;
+    sh:targetSubjectsOf fs:sharedWith ;
+    sh:property [ sh:path fs:sharedWith ; sh:datatype xsd:string ; sh:description "Ensures 'Share With' values are valid system usernames." ] .

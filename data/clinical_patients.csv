@@ -1,0 +1,6 @@
+Label,Identifier,Title,Description,Age,Diagnosis,Study,TestField
+Patient P001,PAT_001,P001 Diabetes Cohort,Male participant in diabetes vaccine trial,45,Type 2 Diabetes,STD_001,
+Patient P002,PAT_002,P002 Diabetes Cohort,Female participant in diabetes vaccine trial,52,Type 2 Diabetes,STD_001,
+Patient P003,PAT_003,P003 Biomarker Study,Female participant in biomarker validation,38,Pre-diabetic,STD_002,
+Patient P004,PAT_004,P004 Cardiovascular Cohort,Male participant in cardiovascular study,55,Hypertension,STD_003,
+Patient P005,PAT_005,P005 Cardiovascular Cohort,Female participant in cardiovascular study,48,Hypertension,STD_003,MySingleTestField

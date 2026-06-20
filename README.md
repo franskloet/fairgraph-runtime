@@ -16,6 +16,10 @@ The system launches:
 2. **Python 3.x** and `pip` (only required if you want to run the automated CLI ingestion script)
 3. **Ollama** (for local LLM capabilities, see instructions below)
 
+### Platform Compatibility (Intel/AMD vs. Apple Silicon M-Series)
+- **Intel/AMD (x86_64/amd64):** All services run natively.
+- **Apple Silicon (arm64/M-series macOS):** The API Gateway, Frontend, and individual database APIs run natively on ARM64 for peak performance. The Fuseki database services automatically run via Rosetta translation in Docker Desktop (forced via the `platform: linux/amd64` compose directive). No manual setup is required.
+
 ---
 
 ## 1. Installing Ollama & Loading the LLM

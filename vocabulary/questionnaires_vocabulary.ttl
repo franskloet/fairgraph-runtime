@@ -90,7 +90,8 @@ custom:Instrumentation a rdfs:Class, sh:NodeShape ;
     [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
     [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ],
     [ sh:name "Method" ; sh:nodeKind sh:IRI ; sh:path custom:Method ; sh:order 4 ],
-    [ sh:name "Instrument type" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Instrument_type ; sh:order 5 ] .
+    [ sh:name "Instrument type" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Instrument_type ; sh:order 5 ] ,
+    [ sh:name "Manufacturer" ; sh:nodeKind sh:IRI ; sh:class custom:Manufacturer ; sh:maxCount 1 ; sh:path custom:hasManufacturer ; sh:order 6 ] .
 
 ### Level 6 — Dataset (dcat:Dataset)
 
@@ -111,6 +112,19 @@ dcat:Dataset a rdfs:Class, sh:NodeShape ;
     [ sh:name "Access rights" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Access_rights ; sh:order 6 ],
     [ sh:name "Active" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path custom:Active ; sh:order 7 ],
     [ sh:name "Study" ; sh:nodeKind sh:IRI ; sh:maxCount 1 ; sh:path custom:Study ; sh:order 8 ] .
+
+
+custom:Manufacturer a rdfs:Class, sh:NodeShape ;
+    sh:closed false ;
+    sh:name "Manufacturer" ;
+    fs:namePlural "Manufacturers" ;
+    sh:ignoredProperties ( rdf:type owl:sameAs ) ;
+    sh:property
+    [ sh:name "Label" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:label ; sh:order 0 ],
+    [ sh:name "Identifier" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:identifier ; sh:order 1 ],
+    [ sh:name "Title" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path dcterms:title ; sh:order 2 ],
+    [ sh:name "Description" ; sh:datatype xsd:string ; sh:maxCount 1 ; sh:path rdfs:comment ; sh:order 3 ] .
+
 
 ### Sharing constraint
 fs:SharingShape a sh:NodeShape ;

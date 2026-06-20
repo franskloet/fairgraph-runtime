@@ -21,6 +21,8 @@ services:
   clinical_api:
     image: frnzdock/fairgraph-api:latest
     container_name: clinical_api
+    volumes:
+      - ./vocabulary:/app/vocabulary
     environment:
       - FUSEKI_BASE_URL=http://clinical_fuseki:3030/ds
       - ADMIN_PASSWORD=admin
@@ -68,6 +70,8 @@ services:
   genomic_api:
     image: frnzdock/fairgraph-api:latest
     container_name: genomic_api
+    volumes:
+      - ./vocabulary:/app/vocabulary
     environment:
       - FUSEKI_BASE_URL=http://genomic_fuseki:3030/ds
       - ADMIN_PASSWORD=admin
@@ -115,6 +119,8 @@ services:
   questionnaires_api:
     image: frnzdock/fairgraph-api:latest
     container_name: questionnaires_api
+    volumes:
+      - ./vocabulary:/app/vocabulary
     environment:
       - FUSEKI_BASE_URL=http://questionnaires_fuseki:3030/ds
       - ADMIN_PASSWORD=admin
@@ -162,6 +168,8 @@ services:
   plant_api:
     image: frnzdock/fairgraph-api:latest
     container_name: plant_api
+    volumes:
+      - ./vocabulary:/app/vocabulary
     environment:
       - FUSEKI_BASE_URL=http://plant_fuseki:3030/ds
       - ADMIN_PASSWORD=admin

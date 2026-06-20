@@ -8,4 +8,4 @@ columns:
   Age: schema:age
   Diagnosis: schema:MedicalCondition
   Study: dcterms:isPartOf
-  TestField: dcterms:isPartOf
+  TestField: custom:usesItem

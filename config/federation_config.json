@@ -1,12 +1,5 @@
 {
-  "connections": [
-    {
-      "name": "remote-db",
-      "url": "http://remote_api:8000",
-      "apiKey": "",
-      "status": "active"
-    }
-  ],
+  "connections": [],
   "plugins": [
     {
       "name": "Nanopublications",

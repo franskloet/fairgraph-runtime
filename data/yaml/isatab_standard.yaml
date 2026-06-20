@@ -2,7 +2,7 @@ name: "ISATAB"
 description: "ISA-Tab standard definition mapping Investigation, Study, Sample, and Assay metadata for metabolomics studies."
 classes:
   - name: "Investigation"
-    uri: "https://fairtree.nl"
+    uri: "https://fairgraph.nl"
     properties:
       - name: "Identifier"
         path: "dcterms:identifier"
@@ -18,7 +18,7 @@ classes:
         path: "dcterms:license"
 
   - name: "Study"
-    uri: "https://fairtree.nl"
+    uri: "https://fairgraph.nl"
     properties:
       - name: "Identifier"
         path: "dcterms:identifier"
@@ -30,7 +30,7 @@ classes:
         path: "dcterms:alternative"
 
   - name: "Sample"
-    uri: "https://fairtree.nl"
+    uri: "https://fairgraph.nl"
     properties:
       - name: "Identifier"
         path: "dcterms:identifier"
@@ -42,7 +42,7 @@ classes:
         path: "dcterms:description"
 
   - name: "Assay"
-    uri: "https://fairtree.nl"
+    uri: "https://fairgraph.nl"
     properties:
       - name: "Identifier"
         path: "dcterms:identifier"

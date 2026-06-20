@@ -1,102 +1,4 @@
 services:
-  clinical_fuseki:
-    image: frnzdock/fairgraph-fuseki:latest
-    platform: linux/amd64
-    container_name: clinical_fuseki_db
-    ports:
-      - "3031:3030"
-    environment:
-      - ADMIN_PASSWORD=admin
-    volumes:
-      - clinical_fuseki-data:/fuseki
-      - ./config/clinical_fuseki_config.ttl:/fuseki/config.ttl
-    command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 30
-      start_period: 60s
-
-  clinical_api:
-    image: frnzdock/fairgraph-api:latest
-    container_name: clinical_api
-    volumes:
-      - ./vocabulary:/app/vocabulary
-    environment:
-      - FUSEKI_BASE_URL=http://clinical_fuseki:3030/ds
-      - ADMIN_PASSWORD=admin
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - LLM_PROVIDER=${LLM_PROVIDER}
-      - LLM_MODEL=${LLM_MODEL}
-      - OLLAMA_MODEL=${OLLAMA_MODEL}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
-      - VOCAB_PATH=./vocabulary/clinical_vocabulary.ttl
-      - AUTH_MODE=oidc
-      - OIDC_ISSUER_URL=http://localhost:8000
-      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
-    depends_on:
-      clinical_fuseki:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 20
-      start_period: 30s
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  genomic_fuseki:
-    image: frnzdock/fairgraph-fuseki:latest
-    platform: linux/amd64
-    container_name: genomic_fuseki_db
-    ports:
-      - "3032:3030"
-    environment:
-      - ADMIN_PASSWORD=admin
-    volumes:
-      - genomic_fuseki-data:/fuseki
-      - ./config/genomic_fuseki_config.ttl:/fuseki/config.ttl
-    command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 30
-      start_period: 60s
-
-  genomic_api:
-    image: frnzdock/fairgraph-api:latest
-    container_name: genomic_api
-    volumes:
-      - ./vocabulary:/app/vocabulary
-    environment:
-      - FUSEKI_BASE_URL=http://genomic_fuseki:3030/ds
-      - ADMIN_PASSWORD=admin
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - LLM_PROVIDER=${LLM_PROVIDER}
-      - LLM_MODEL=${LLM_MODEL}
-      - OLLAMA_MODEL=${OLLAMA_MODEL}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
-      - VOCAB_PATH=./vocabulary/genomic_vocabulary.ttl
-      - AUTH_MODE=oidc
-      - OIDC_ISSUER_URL=http://localhost:8000
-      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
-    depends_on:
-      genomic_fuseki:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 20
-      start_period: 30s
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
   questionnaires_fuseki:
     image: frnzdock/fairgraph-fuseki:latest
     platform: linux/amd64
@@ -146,55 +48,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  plant_fuseki:
-    image: frnzdock/fairgraph-fuseki:latest
-    platform: linux/amd64
-    container_name: plant_fuseki_db
-    ports:
-      - "3034:3030"
-    environment:
-      - ADMIN_PASSWORD=admin
-    volumes:
-      - plant_fuseki-data:/fuseki
-      - ./config/plant_fuseki_config.ttl:/fuseki/config.ttl
-    command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 30
-      start_period: 60s
-
-  plant_api:
-    image: frnzdock/fairgraph-api:latest
-    container_name: plant_api
-    volumes:
-      - ./vocabulary:/app/vocabulary
-    environment:
-      - FUSEKI_BASE_URL=http://plant_fuseki:3030/ds
-      - ADMIN_PASSWORD=admin
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - LLM_PROVIDER=${LLM_PROVIDER}
-      - LLM_MODEL=${LLM_MODEL}
-      - OLLAMA_MODEL=${OLLAMA_MODEL}
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
-      - VOCAB_PATH=./vocabulary/plant_vocabulary.ttl
-      - AUTH_MODE=oidc
-      - OIDC_ISSUER_URL=http://localhost:8000
-      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
-    depends_on:
-      plant_fuseki:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
-      interval: 10s
-      timeout: 3s
-      retries: 20
-      start_period: 30s
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
   central_router:
     image: frnzdock/fairgraph-api:latest
     container_name: central_router
@@ -213,22 +66,12 @@ services:
       - LLM_MODEL=${LLM_MODEL}
       - OLLAMA_MODEL=${OLLAMA_MODEL}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
-      - INSTANCE_CLINICAL_URL=http://clinical_api:8000
-      - INSTANCE_GENOMIC_URL=http://genomic_api:8000
       - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
-      - INSTANCE_PLANT_URL=http://plant_api:8000
-      - INSTANCE_PLANT_DESCRIPTION=plant Contains plant trials, biological materials, and observations.
       - OIDC_ISSUER_URL=http://localhost:8000
       - FUSEKI_IMAGE=${FUSEKI_IMAGE}
       - API_IMAGE=${API_IMAGE}
     depends_on:
-      clinical_api:
-        condition: service_healthy
-      genomic_api:
-        condition: service_healthy
       questionnaires_api:
-        condition: service_healthy
-      plant_api:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
@@ -249,10 +92,7 @@ services:
         condition: service_healthy
 
 volumes:
-  clinical_fuseki-data:
-  genomic_fuseki-data:
   questionnaires_fuseki-data:
-  plant_fuseki-data:
 
 networks:
   default:

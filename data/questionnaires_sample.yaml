@@ -1,0 +1,7 @@
+tableName: questionnaires_sample
+targetClass: schema:ResearchProject
+columns:
+  Label: rdfs:label
+  Identifier: dcterms:identifier
+  Title: dcterms:title
+  Description: rdfs:comment

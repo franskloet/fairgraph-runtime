@@ -241,6 +241,8 @@ On the primary machine hosting your Central Router and Frontend:
 
 FAIRGraph maps Excel sheets to **Classes** (entities) and columns to **Properties** (attributes or relationships).
 
+![FAIRGraph Import Wizard Interface](images/import_wizard.png)
+
 ### A. Workbook Structuring Rules
 1. **One Sheet per Class**: Create a tab for each class of data you want to import. For the ISATAB standard (`isatab_standard.yaml`), you would create tabs named:
    * `Investigations` (Target Class: `Investigation`)
@@ -308,6 +310,8 @@ When you upload `Q2.xlsx`, FAIRGraph's smart reference resolver queries your dat
 
 You can extend standards dynamically without altering the standard configuration schema files.
 
+![Admin Standards Management Dashboard](images/admin_standards.png)
+
 ### A. Implementing a Standard (e.g. ISATAB)
 Structure your Excel tabs and columns to match the properties defined in the standard. For example, in an `Investigations` tab:
 
@@ -372,9 +376,18 @@ In the **Admin Panel** -> **Manage Users** tab:
 ## 10. Platform Usage Guide
 
 - **Google-Style Semantic Search**: Navigate to [http://localhost:3000/search](http://localhost:3000/search) to issue natural language queries across the graph.
+  
+  ![Google-Style Semantic Search Interface](images/search_page.png)
+
 - **Database Browser**: Navigate to [http://localhost:3000/browse](http://localhost:3000/browse) to inspect ingested records. Click on any record to view its detail page and interact with the Cytoscape graph showing its relationships.
+  
+  ![Entity Browser & Interactive Network Graph](images/browse_page.png)
+
 - **Vocabulary Explorer & Query Builder**: Navigate to [http://localhost:3000/wordcloud](http://localhost:3000/wordcloud) to explore terms. Clicking tags dynamically appends them as colored blocks to the query builder.
+
 - **Admin Panel**: Navigate to [http://localhost:3000/admin](http://localhost:3000/admin) (credentials: `admin` / `admin-password`). Here you can manage databases, standards, groups, and user permissions.
+  
+  ![Admin Databases Dashboard](images/admin_databases.png)
 
 ---
 

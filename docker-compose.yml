@@ -9,7 +9,7 @@ services:
       - ADMIN_PASSWORD=admin
     volumes:
       - questionnaires_fuseki-data:/fuseki
-      - ./config/questionnaires_fuseki_config.ttl:/fuseki/config.ttl
+      - ./config/questionnaires_fuseki_config.ttl:/fuseki/config.ttl:Z
     command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
@@ -22,7 +22,7 @@ services:
     image: frnzdock/fairgraph-api:latest
     container_name: questionnaires_api
     volumes:
-      - ./vocabulary:/app/vocabulary
+      - ./vocabulary:/app/vocabulary:Z
     environment:
       - FUSEKI_BASE_URL=http://questionnaires_fuseki:3030/ds
       - ADMIN_PASSWORD=admin
@@ -54,9 +54,11 @@ services:
     command: [ "uvicorn", "central_router:app", "--host", "0.0.0.0", "--port", "8000" ]
     ports:
       - "8000:8000"
+    security_opt:
+      - label=disable
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config:/app/config
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:Z
+      - ./config:/app/config:Z
     environment:
       - ADMIN_PASSWORD=admin
       - AUTH_MODE=mock

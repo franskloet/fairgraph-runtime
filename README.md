@@ -24,8 +24,8 @@ To optimize resource consumption, the stack is configured to run **one** default
 
 ## 2. Platform Documentation
 
-For detailed information, please read the newly added manual:
-- **[USER_MANUAL.md](file:///home/frans/Development/fair/fairgraph-2/docker-setup/USER_MANUAL.md)**: Contains hardware resource recommendations (per database slice and overall), system setup with Ollama for local LLM integration, user access levels, and data ingestion tutorials.
+For detailed information, please read the consolidated, comprehensive manual:
+- **[USER_MANUAL.md](file:///home/frans/Development/fair/fairgraph-2/docker-setup/USER_MANUAL.md)**: Contains the single unified guide covering installation, resource requirements, local LLM setup, remote database setup, ingestion strategies, standard customization rules, ingestion modes, and user manual walkthroughs.
 
 ---
 

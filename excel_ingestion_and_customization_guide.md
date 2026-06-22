@@ -87,16 +87,27 @@ If you want to model a concept that is not in the ISATAB standard at all (e.g. `
 
 ---
 
-## 5. Core Metadata Fields & User-Scope Global Identifiers
+## 5. Mandatory Core Metadata Fields & User-Scope Global Identifiers
 
-When modelling your data sheets, four metadata fields have specific semantic roles in identity, indexing, and referencing:
+To ensure clean indexing, semantic relationships, and validation, **every sheet in your Excel workbook must contain the following four mandatory columns**. If any of these columns are missing, the Import Wizard validation will report them as missing and block ingestion.
 
-| Excel Column Header | Semantic Mapping | Role & Behavior |
-| :--- | :--- | :--- |
-| **`Label`** | `rdfs:label` | **Required.** The primary human-readable display label. It is used to generate the local slug (the suffix of the database URI) and is the default key used to reference this record from other sheets *within the same workbook*. |
-| **`Identifier`** | `dcterms:identifier` | **Optional but highly recommended.** A unique machine-readable key (e.g. `outcome_ID_food-intake`). Once ingested, other workbooks can refer to this identifier directly to link to this record. |
-| **`Title`** | `dcterms:title` | The formal title or name of the entity. |
-| **`Description`** | `rdfs:comment` / `dcterms:description` | A textual description, summary, or definition. |
+### The 4 Mandatory Columns & Their Usage
+
+1. **`Label`** (Semantic Mapping: `rdfs:label`)
+   - **Function & Behavior**: The primary human-readable display name for the entity.
+   - **Usage**: It is shown in search results, browsing lists, and entity cards. In the background, it is used to generate the database URI slug (the unique URL suffix) and is the default key used to reference this record from other tabs *within the same workbook*.
+   
+2. **`Identifier`** (Semantic Mapping: `dcterms:identifier`)
+   - **Function & Behavior**: A unique, machine-readable key (e.g., `outcome_ID_sweetness-preference` or `study_ID_batch-2`).
+   - **Usage**: Ensures global reusability. Once ingested, this identifier is cached. Subsequent workbook uploads can refer to this unique ID to automatically link to the existing record without duplicating it in the database.
+
+3. **`Title`** (Semantic Mapping: `dcterms:title`)
+   - **Function & Behavior**: The formal or official title of the record.
+   - **Usage**: Captures formal names (e.g., "Lipidomics Study of Blood Serum" or "Standard NMR Extraction Protocol"). Used for cataloging and formal metadata headers.
+
+4. **`Description`** (Semantic Mapping: `rdfs:comment`)
+   - **Function & Behavior**: A textual description or summary.
+   - **Usage**: Documents definitions, notes, experimental conditions, or other relevant text. This field is fully indexed for search queries.
 
 ---
 
@@ -129,4 +140,26 @@ To keep your main workbooks clean, you can manage frequently returning dictionar
    | Study B | ST-B99 | Clinical Study B | **outcome_ID_sweetness-preference** |
 
 When you upload `Q2.xlsx`, FAIRGraph's smart reference resolver queries your database cache, locates the pre-existing global identifier, and automatically links Study B to the existing `Sweetness Preference` entity!
+
+---
+
+## 6. Ingestion Modes: Strict vs. Flexible Ingestion
+
+Depending on your database configuration, your instance may operate in **Strict Ingestion Mode** or **Flexible Ingestion Mode**. These modes enforce different levels of compliance with your registered standards (e.g., MIAPPE or ISATAB).
+
+### Flexible Ingestion Mode (Default)
+In Flexible Mode, you have the freedom to extend layouts dynamically:
+* You can add custom columns (properties) to standard sheets, which are registered under the `custom:` namespace on the fly.
+* You can define entirely new tabs (classes) without pre-declaring them.
+* Properties can be mapped dynamically during ingestion regardless of where they are defined in the standard.
+
+### Strict Ingestion Mode
+Strict Mode enforces consistency and compliance with your schemas. When Strict Mode is enabled:
+1. **Registered Classes Only**: You can only map Excel tabs to classes that are explicitly defined in your standard templates.
+2. **Class-Specific Properties**: You can only map columns to properties that are **explicitly defined for that specific class** in the standard schema.
+   * *Example*: If the standard defines `hasIdentifier` under the `Study` class but not under the `Investigation` class, mapping a column on an `Investigations` sheet to `hasIdentifier` **will fail** with a validation error:
+     `Strict validation failed: Property '...' is not defined for class 'Investigation' in the standards.`
+   * If you need a property to be available on multiple classes, it must be explicitly defined under each class's properties list in your standard YAML schema template.
+3. **Core Metadata Exceptions**: Standard metadata properties (`rdfs:label`, `dcterms:identifier`, `dcterms:title`, `rdfs:comment`, and `fs:sharedWith`) are always allowed on all classes in both modes.
+
 

@@ -1,6 +1,7 @@
 services:
   questionnaires_fuseki:
     image: frnzdock/fairgraph-fuseki:latest
+    restart: unless-stopped
     platform: linux/amd64
     container_name: questionnaires_fuseki_db
     ports:
@@ -20,6 +21,7 @@ services:
 
   questionnaires_api:
     image: frnzdock/fairgraph-api:latest
+    restart: unless-stopped
     container_name: questionnaires_api
     volumes:
       - ./vocabulary:/app/vocabulary:Z
@@ -50,6 +52,7 @@ services:
 
   central_router:
     image: frnzdock/fairgraph-api:latest
+    restart: unless-stopped
     container_name: central_router
     command: [ "uvicorn", "central_router:app", "--host", "0.0.0.0", "--port", "8000" ]
     ports:
@@ -86,6 +89,7 @@ services:
 
   frontend:
     image: frnzdock/fairgraph-frontend:latest
+    restart: unless-stopped
     container_name: frontend
     ports:
       - "3000:80"

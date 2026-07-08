@@ -44,7 +44,7 @@ services:
       - CUSTOM_MODEL=${CUSTOM_MODEL}
       - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
       - AUTH_MODE=oidc
-      - OIDC_ISSUER_URL=http://localhost:8000
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
       - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
     depends_on:
       questionnaires_fuseki:

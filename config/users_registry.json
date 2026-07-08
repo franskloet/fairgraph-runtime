@@ -2,26 +2,20 @@
   "admin": {
     "password": "admin-password",
     "role": "admin",
-    "groups": [
-      "team_alpha"
-    ],
+    "groups": [],
     "database": "all"
   },
   "user1": {
     "password": "user-password",
     "role": "user",
-    "groups": [
-      "team_alpha"
-    ],
-    "database": "plant,clinical"
+    "groups": [],
+    "database": ""
   },
   "user2": {
     "password": "user-password",
     "role": "user",
-    "groups": [
-      "team_beta"
-    ],
-    "database": "clinical"
+    "groups": [],
+    "database": ""
   },
   "external_user": {
     "password": "external-password",
@@ -29,6 +23,6 @@
     "groups": [
       "remote_instances"
     ],
-    "database": "genomic"
+    "database": ""
   }
 }

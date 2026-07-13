@@ -76,7 +76,7 @@ services:
       - ./config:/app/config:Z
     environment:
       - ADMIN_PASSWORD=admin
-      - AUTH_MODE=mock
+      - AUTH_MODE=${AUTH_MODE:-mock}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - LLM_PROVIDER=${LLM_PROVIDER}
@@ -125,9 +125,24 @@ services:
       central_router:
         condition: service_healthy
 
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    container_name: local_ssl_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    command: caddy reverse-proxy --from fairgraph.nl --to frontend:80
+    depends_on:
+      - frontend
+    volumes:
+      - caddy_data:/data
+
 volumes:
   questionnaires_fuseki-data:
+  caddy_data:
 
 networks:
   default:
     name: fairgraph_net
+

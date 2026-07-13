@@ -45,7 +45,11 @@ services:
       - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
       - AUTH_MODE=oidc
       - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
-      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
+      - OIDC_JWKS_URL=${OIDC_JWKS_URL:-http://central_router:8000/.well-known/jwks.json}
+      - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM:-preferred_username}
+      - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM:-role}
+      - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM:-groups}
+      - OIDC_AUDIENCE=${OIDC_AUDIENCE:-}
     depends_on:
       questionnaires_fuseki:
         condition: service_healthy
@@ -88,7 +92,15 @@ services:
       - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
       - CUSTOM_MODEL=${CUSTOM_MODEL}
       - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
-      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-https://proxy.acc.sram.eduteams.org}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI}
+      - OIDC_SCOPE=${OIDC_SCOPE}
+      - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM}
+      - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM}
+      - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM}
+      - OIDC_AUDIENCE=${OIDC_AUDIENCE}
       - FUSEKI_IMAGE=${FUSEKI_IMAGE}
       - API_IMAGE=${API_IMAGE}
     depends_on:

@@ -43,7 +43,7 @@ services:
       - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
       - CUSTOM_MODEL=${CUSTOM_MODEL}
       - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
-      - AUTH_MODE=oidc
+      - AUTH_MODE=${AUTH_MODE:-oidc}
       - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
       - OIDC_JWKS_URL=${OIDC_JWKS_URL:-http://central_router:8000/.well-known/jwks.json}
       - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM:-preferred_username}
@@ -92,7 +92,7 @@ services:
       - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
       - CUSTOM_MODEL=${CUSTOM_MODEL}
       - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
-      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-https://proxy.acc.sram.eduteams.org}
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:3000}
       - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
       - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI}
@@ -103,6 +103,7 @@ services:
       - OIDC_AUDIENCE=${OIDC_AUDIENCE}
       - FUSEKI_IMAGE=${FUSEKI_IMAGE}
       - API_IMAGE=${API_IMAGE}
+
     depends_on:
       questionnaires_api:
         condition: service_healthy
@@ -145,4 +146,4 @@ volumes:
 networks:
   default:
     name: fairgraph_net
-
+    external: true

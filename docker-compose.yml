@@ -1,13 +1,20 @@
+# Production setup: runs the published images, no source code needed.
+# Put this file next to .env, config/ and vocabulary/, then:
+#   docker network create fairgraph_net    (once)
+#   docker compose pull && docker compose up -d
+# The site is served on 127.0.0.1:3000, for the nginx reverse proxy on this host (https).
 services:
+
+  # Built-in example database "questionnaires", next to the databases created from the Admin Panel
   questionnaires_fuseki:
     image: frnzdock/fairgraph-fuseki:latest
     restart: unless-stopped
     platform: linux/amd64
     container_name: questionnaires_fuseki_db
     ports:
-      - "3033:3030"
+      - "127.0.0.1:3033:3030"
     environment:
-      - ADMIN_PASSWORD=admin
+      - ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
     volumes:
       - questionnaires_fuseki-data:/fuseki
       - ./config/questionnaires_fuseki_config.ttl:/fuseki/config.ttl:Z
@@ -27,7 +34,7 @@ services:
       - ./vocabulary:/app/vocabulary:Z
     environment:
       - FUSEKI_BASE_URL=http://questionnaires_fuseki:3030/ds
-      - ADMIN_PASSWORD=admin
+      - ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - LLM_PROVIDER=${LLM_PROVIDER}
@@ -42,15 +49,17 @@ services:
       - CUSTOM_API_KEY=${CUSTOM_API_KEY}
       - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
       - CUSTOM_MODEL=${CUSTOM_MODEL}
+      - FACET_MAX_DEPTH=${FACET_MAX_DEPTH:-3}
       - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
-      - AUTH_MODE=${AUTH_MODE:-oidc}
+      - AUTH_MODE=oidc
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
+      # Same as the databases the router creates: tokens are signed by the router
       - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
-      - OIDC_JWKS_URL=${OIDC_JWKS_URL:-http://central_router:8000/.well-known/jwks.json}
+      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
       - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM:-preferred_username}
       - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM:-role}
       - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM:-groups}
       - OIDC_AUDIENCE=${OIDC_AUDIENCE:-}
-      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
     depends_on:
       questionnaires_fuseki:
         condition: service_healthy
@@ -67,17 +76,20 @@ services:
     image: frnzdock/fairgraph-api:latest
     restart: unless-stopped
     container_name: central_router
+    # 0.0.0.0 inside the container; no ports are published, the frontend reaches it over fairgraph_net
     command: [ "uvicorn", "central_router:app", "--host", "0.0.0.0", "--port", "8000" ]
-    ports:
-      - "8000:8000"
+    # SELinux: lets the router use the Docker socket to start databases
     security_opt:
       - label=disable
     volumes:
       - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:Z
       - ./config:/app/config:Z
     environment:
-      - ADMIN_PASSWORD=admin
-      - AUTH_MODE=${AUTH_MODE:-mock}
+      - ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
+      - AUTH_MODE=${AUTH_MODE:-oidc}
+      # Only hashed passwords can log in
+      - ALLOW_PLAINTEXT_PASSWORDS=${ALLOW_PLAINTEXT_PASSWORDS:-false}
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - LLM_PROVIDER=${LLM_PROVIDER}
@@ -85,6 +97,8 @@ services:
       - OLLAMA_MODEL=${OLLAMA_MODEL}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
       - LLM_EXPANSION_TIMEOUT=${LLM_EXPANSION_TIMEOUT}
+      - LLM_PREP_TIMEOUT=${LLM_PREP_TIMEOUT:-240}
+      - RESULT_CACHE_TTL=${RESULT_CACHE_TTL:-600}
       - LLM_SEARCH_TIMEOUT=${LLM_SEARCH_TIMEOUT}
       - LLM_SEARCH_ENABLED=${LLM_SEARCH_ENABLED}
       - OPENAI_MODEL=${OPENAI_MODEL}
@@ -92,8 +106,11 @@ services:
       - CUSTOM_API_KEY=${CUSTOM_API_KEY}
       - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
       - CUSTOM_MODEL=${CUSTOM_MODEL}
+      # Images the router starts for each database created in the Admin Panel
+      - API_IMAGE=${API_IMAGE:-frnzdock/fairgraph-api:latest}
+      - FUSEKI_IMAGE=${FUSEKI_IMAGE:-frnzdock/fairgraph-fuseki:latest}
       - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
-      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:3000}
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-https://proxy.sram.surf.nl}
       - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
       - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI}
@@ -101,11 +118,9 @@ services:
       - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM}
       - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM}
       - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM}
+      - OIDC_ADMIN_ENTITLEMENTS=${OIDC_ADMIN_ENTITLEMENTS:-}
+      - OIDC_USER_ENTITLEMENTS=${OIDC_USER_ENTITLEMENTS:-}
       - OIDC_AUDIENCE=${OIDC_AUDIENCE}
-      - FUSEKI_IMAGE=${FUSEKI_IMAGE}
-      - API_IMAGE=${API_IMAGE}
-      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
-
     depends_on:
       questionnaires_api:
         condition: service_healthy
@@ -122,28 +137,15 @@ services:
     image: frnzdock/fairgraph-frontend:latest
     restart: unless-stopped
     container_name: frontend
+    # Only reachable from this host: nginx forwards https to it
     ports:
-      - "3000:80"
+      - "127.0.0.1:3000:80"
     depends_on:
       central_router:
         condition: service_healthy
 
-  caddy:
-    image: caddy:latest
-    restart: unless-stopped
-    container_name: local_ssl_proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    command: caddy reverse-proxy --from fairgraph.nl --to frontend:80
-    depends_on:
-      - frontend
-    volumes:
-      - caddy_data:/data
-
 volumes:
   questionnaires_fuseki-data:
-  caddy_data:
 
 networks:
   default:

@@ -1,0 +1,151 @@
+services:
+  questionnaires_fuseki:
+    image: frnzdock/fairgraph-fuseki:latest
+    restart: unless-stopped
+    platform: linux/amd64
+    container_name: questionnaires_fuseki_db
+    ports:
+      - "3033:3030"
+    environment:
+      - ADMIN_PASSWORD=admin
+    volumes:
+      - questionnaires_fuseki-data:/fuseki
+      - ./config/questionnaires_fuseki_config.ttl:/fuseki/config.ttl:Z
+    command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 60s
+
+  questionnaires_api:
+    image: frnzdock/fairgraph-api:latest
+    restart: unless-stopped
+    container_name: questionnaires_api
+    volumes:
+      - ./vocabulary:/app/vocabulary:Z
+    environment:
+      - FUSEKI_BASE_URL=http://questionnaires_fuseki:3030/ds
+      - ADMIN_PASSWORD=admin
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER}
+      - LLM_MODEL=${LLM_MODEL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - LLM_EXPANSION_TIMEOUT=${LLM_EXPANSION_TIMEOUT}
+      - LLM_SEARCH_TIMEOUT=${LLM_SEARCH_TIMEOUT}
+      - LLM_SEARCH_ENABLED=${LLM_SEARCH_ENABLED}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - CUSTOM_API_KEY=${CUSTOM_API_KEY}
+      - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
+      - CUSTOM_MODEL=${CUSTOM_MODEL}
+      - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
+      - AUTH_MODE=${AUTH_MODE:-oidc}
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
+      - OIDC_JWKS_URL=${OIDC_JWKS_URL:-http://central_router:8000/.well-known/jwks.json}
+      - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM:-preferred_username}
+      - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM:-role}
+      - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM:-groups}
+      - OIDC_AUDIENCE=${OIDC_AUDIENCE:-}
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
+    depends_on:
+      questionnaires_fuseki:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  central_router:
+    image: frnzdock/fairgraph-api:latest
+    restart: unless-stopped
+    container_name: central_router
+    command: [ "uvicorn", "central_router:app", "--host", "0.0.0.0", "--port", "8000" ]
+    ports:
+      - "8000:8000"
+    security_opt:
+      - label=disable
+    volumes:
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:Z
+      - ./config:/app/config:Z
+    environment:
+      - ADMIN_PASSWORD=admin
+      - AUTH_MODE=${AUTH_MODE:-mock}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER}
+      - LLM_MODEL=${LLM_MODEL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - LLM_EXPANSION_TIMEOUT=${LLM_EXPANSION_TIMEOUT}
+      - LLM_SEARCH_TIMEOUT=${LLM_SEARCH_TIMEOUT}
+      - LLM_SEARCH_ENABLED=${LLM_SEARCH_ENABLED}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - CUSTOM_API_KEY=${CUSTOM_API_KEY}
+      - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
+      - CUSTOM_MODEL=${CUSTOM_MODEL}
+      - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:3000}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - OIDC_REDIRECT_URI=${OIDC_REDIRECT_URI}
+      - OIDC_SCOPE=${OIDC_SCOPE}
+      - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM}
+      - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM}
+      - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM}
+      - OIDC_AUDIENCE=${OIDC_AUDIENCE}
+      - FUSEKI_IMAGE=${FUSEKI_IMAGE}
+      - API_IMAGE=${API_IMAGE}
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
+
+    depends_on:
+      questionnaires_api:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 40s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    image: frnzdock/fairgraph-frontend:latest
+    restart: unless-stopped
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      central_router:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    container_name: local_ssl_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    command: caddy reverse-proxy --from fairgraph.nl --to frontend:80
+    depends_on:
+      - frontend
+    volumes:
+      - caddy_data:/data
+
+volumes:
+  questionnaires_fuseki-data:
+  caddy_data:
+
+networks:
+  default:
+    name: fairgraph_net
+    external: true

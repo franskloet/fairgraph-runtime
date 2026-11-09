@@ -1,0 +1,81 @@
+# Optional built-in example database "questionnaires", next to the databases created from the Admin Panel.
+# Start it with the main file:
+#   docker compose -f docker-compose.yml -f docker-compose.databases.yml up -d
+# Use both -f options on every command for it (pull, down, logs), or compose sees it as an orphan.
+services:
+  questionnaires_fuseki:
+    image: frnzdock/fairgraph-fuseki:latest
+    restart: unless-stopped
+    platform: linux/amd64
+    container_name: questionnaires_fuseki_db
+    ports:
+      - "127.0.0.1:3033:3030"
+    environment:
+      - ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
+    volumes:
+      - questionnaires_fuseki-data:/fuseki
+      - ./config/questionnaires_fuseki_config.ttl:/fuseki/config.ttl:Z
+    command: [ "/jena-fuseki/fuseki-server", "--config=/fuseki/config.ttl" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3030/ || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 60s
+
+  questionnaires_api:
+    image: frnzdock/fairgraph-api:latest
+    restart: unless-stopped
+    container_name: questionnaires_api
+    volumes:
+      - ./vocabulary:/app/vocabulary:Z
+    environment:
+      - FUSEKI_BASE_URL=http://questionnaires_fuseki:3030/ds
+      - ADMIN_PASSWORD=${INITIAL_ADMIN_PASSWORD:?Set INITIAL_ADMIN_PASSWORD in .env}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER}
+      - LLM_MODEL=${LLM_MODEL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - LLM_EXPANSION_TIMEOUT=${LLM_EXPANSION_TIMEOUT}
+      - LLM_SEARCH_TIMEOUT=${LLM_SEARCH_TIMEOUT}
+      - LLM_SEARCH_ENABLED=${LLM_SEARCH_ENABLED}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - CUSTOM_API_KEY=${CUSTOM_API_KEY}
+      - CUSTOM_BASE_URL=${CUSTOM_BASE_URL}
+      - CUSTOM_MODEL=${CUSTOM_MODEL}
+      - FACET_MAX_DEPTH=${FACET_MAX_DEPTH:-3}
+      - VOCAB_PATH=./vocabulary/questionnaires_vocabulary.ttl
+      - AUTH_MODE=oidc
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in .env}
+      # Same as the databases the router creates: tokens are signed by the router
+      - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-http://localhost:8000}
+      - OIDC_JWKS_URL=http://central_router:8000/.well-known/jwks.json
+      - OIDC_USERNAME_CLAIM=${OIDC_USERNAME_CLAIM:-preferred_username}
+      - OIDC_ROLE_CLAIM=${OIDC_ROLE_CLAIM:-role}
+      - OIDC_GROUPS_CLAIM=${OIDC_GROUPS_CLAIM:-groups}
+      - OIDC_AUDIENCE=${OIDC_AUDIENCE:-}
+    depends_on:
+      questionnaires_fuseki:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --method=GET http://127.0.0.1:8000/health -O /dev/null || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Lets the router find the database, and start after it
+  central_router:
+    environment:
+      - INSTANCE_QUESTIONNAIRES_URL=http://questionnaires_api:8000
+    depends_on:
+      questionnaires_api:
+        condition: service_healthy
+
+volumes:
+  questionnaires_fuseki-data:

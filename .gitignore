@@ -1,3 +1,4 @@
 !data/
 /data/yaml/
 .env
+config/federation_config.json

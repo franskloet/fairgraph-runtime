@@ -1,5 +1,9 @@
 name: "MIAPPE"
 description: "MIAPPE v1.2 plant phenotyping standard definition mapping Investigation, Study, Biological Material, Observation Unit, and Variable metadata."
+# Shared vocabularies a database created from this standard subscribes to
+vocabularies: [species]
+prefixes:
+  ppeo: "https://fairgraph.nl/ontology/ppeo#"
 classes:
   - name: "Investigation"
     uri: "https://fairgraph.nl"
@@ -42,6 +46,11 @@ classes:
     properties:
       - name: "Identifier"
         path: "dcterms:identifier"
+      # MIAPPE "Organism": the taxon at species level (NCBI Taxonomy recommended). A link to the
+      # shared species vocabulary: a name, synonym, NCBITaxon:<id> or URI in the sheet resolves to it.
+      - name: "Organism"
+        path: "ppeo:organism"
+        class: "fs:Species"
       - name: "Organism Genus"
         path: "http://obolibrary.org"
       - name: "Organism Species"

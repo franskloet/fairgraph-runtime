@@ -45,6 +45,9 @@ services:
       # Images the router starts for each database created in the Admin Panel
       - API_IMAGE=${API_IMAGE:-frnzdock/fairgraph-api:latest}
       - FUSEKI_IMAGE=${FUSEKI_IMAGE:-frnzdock/fairgraph-fuseki:latest}
+      # Shared vocabularies: the FAIRGraph ontologies catalog, kept in config/vocabularies/
+      - VOCABULARY_CATALOG_URL=${VOCABULARY_CATALOG_URL:-https://fairgraph.github.io/fairgraph-ontologies/catalog.json}
+      - VOCABULARY_AUTO_SYNC=${VOCABULARY_AUTO_SYNC:-true}
       - OIDC_ISSUER_URL=${OIDC_ISSUER_URL:-https://proxy.sram.surf.nl}
       - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}

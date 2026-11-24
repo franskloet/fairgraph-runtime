@@ -1,0 +1,73 @@
+# FAIR2GROW GDP measurements data model v0.1, from Semantic Treehouse (TNO):
+#   https://tno.semantic-treehouse.nl/id/specification/fair2grow-gdp-measurements-data-model/0.1
+# The model has one record type, "Observations": one sensor reading per row.
+# Observation's property paths are the model's own predicates, so the data matches the Treehouse graph pattern.
+#
+# Experiment, Cultivation and Sensor are FAIRGraph additions: the model only has their IDs as text.
+# Here an observation links to their records instead. A link is resolved by the record's
+# Identifier (or Label), from the same workbook or from records already in the database,
+# so put those records in the workbook (or load them first), with the IDs the readings use.
+name: "FAIR2GROW GDP"
+description: "FAIR2GROW GDP measurements data model v0.1 (Semantic Treehouse): sensor observations linked to their experiment, cultivation and sensor."
+# Records are named by Identifier: a reading has no name, and observations refer to
+# experiments, cultivations and sensors by their IDs. Identifier is not part of the Treehouse model.
+record_key: identifier
+prefixes:
+  f2g: "https://tno.semantic-treehouse.nl/id/specification/fair2grow-gdp-measurements-data-model/0.1#Observations/"
+  # Classes the Treehouse model does not define, so not in TNO's namespace
+  f2gx: "https://fairgraph.nl/ontology/fair2grow#"
+classes:
+  - name: "Observation"
+    uri: "https://tno.semantic-treehouse.nl/id/specification/fair2grow-gdp-measurements-data-model/0.1#Observations"
+    description: "A single sensor measurement in a FAIR2GROW GDP experiment."
+    properties:
+      # Unique per reading, for example "<sensor_id>_<datetime>"
+      - name: "Identifier"
+        path: "dcterms:identifier"
+      # Required in the model (1..1). The time of measurement by the sensor, with timezone,
+      # not the time the gateway received it (which can be 100+ ms later).
+      # The model types it as a string; "string" here stops FAIRGraph from guessing xsd:date from the name.
+      - name: "Datetime"
+        path: "f2g:datetime"
+        datatype: "string"
+      - name: "Experiment"
+        path: "f2g:experiment_id"
+        class: "Experiment"
+      - name: "Cultivation"
+        path: "f2g:cultivation"
+        class: "Cultivation"
+      - name: "Compartment"
+        path: "f2g:compartment"
+      - name: "Sensor"
+        path: "f2g:sensor_id"
+        class: "Sensor"
+      - name: "Observed property"
+        path: "f2g:observed_property"
+      - name: "Value"
+        path: "f2g:value"
+      - name: "Unit"
+        path: "f2g:unit"
+      - name: "Quality flag"
+        path: "f2g:quality_flag"
+
+  # Label, Title and Description come with every class; Identifier is the ID the readings use.
+  - name: "Experiment"
+    uri: "f2gx:Experiment"
+    description: "A FAIR2GROW GDP experiment, the observations' experiment_id."
+    properties:
+      - name: "Identifier"
+        path: "dcterms:identifier"
+
+  - name: "Cultivation"
+    uri: "f2gx:Cultivation"
+    description: "A cultivation in a FAIR2GROW GDP experiment."
+    properties:
+      - name: "Identifier"
+        path: "dcterms:identifier"
+
+  - name: "Sensor"
+    uri: "f2gx:Sensor"
+    description: "A sensor that records FAIR2GROW GDP observations, the observations' sensor_id."
+    properties:
+      - name: "Identifier"
+        path: "dcterms:identifier"
